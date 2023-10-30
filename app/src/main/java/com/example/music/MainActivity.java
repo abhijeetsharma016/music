@@ -10,15 +10,16 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     private Button play;
     private Button pause;
     private SeekBar seekBar;
-    private MediaPlayer mediaPlayer1;
-    private MediaPlayer mediaPlayer2;
-    private MediaPlayer mediaPlayer3;
-    private MediaPlayer mediaPlayer4;
+    ArrayList<String> songs;
+    int currentSongIndex = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,30 +27,38 @@ public class MainActivity extends AppCompatActivity {
         play = findViewById(R.id.play);
         pause = findViewById(R.id.pause);
         seekBar = findViewById(R.id.seekBar);
-
-
+        //Initilising media player
+        MediaPlayer mediaPlayer = new MediaPlayer();
 
         //from loacal source
         //mediaPlayer= MediaPlayer.create(this,R.raw.music1);
 
         //From remote source
-        mediaPlayer1 = new MediaPlayer();
+        songs = new ArrayList<>();
+        songs.add("https://paglasongs.com/files/download/id/14824");//heeriye
+        songs.add("https://paglasongs.com/files/download/id/15342");//Hu Main Jaha Tum Ho Waha Mp3 Download Mohit Lalwani
+        songs.add("https://paglasongs.com/files/download/id/11687");//Aap jaisa koi
+        songs.add("https://paglasongs.com/files/download/id/13881");//Bye
+
+        //shuffling songs
+        Collections.shuffle(songs);
         try {
-            mediaPlayer1.setDataSource("https://paglasongs.com/files/download/id/14824");
-        } catch (IOException e) {
+            mediaPlayer.setDataSource(songs.get(currentSongIndex));
+        }catch (Exception e){
             throw new RuntimeException(e);
         }
-        mediaPlayer1.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 Toast.makeText(MainActivity.this, "Ready to play", Toast.LENGTH_SHORT).show();
                 mp.start();
-                seekBar.setMax(mediaPlayer1.getDuration());
+                seekBar.setMax(mediaPlayer.getDuration());
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if(fromUser){
-                            mediaPlayer1.seekTo(progress);
+                            mediaPlayer.seekTo(progress);
                         }
                     }
 
@@ -65,23 +74,40 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-        mediaPlayer1.prepareAsync();
+        mediaPlayer.prepareAsync();
 
-
-
-
-        mediaPlayer1.start();
+        mediaPlayer.start();
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer1.start();
+                mediaPlayer.start();
             }
         });
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer1.pause();
+                mediaPlayer.pause();
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                // increment the current song index
+                currentSongIndex++;
+                // check if the index is valid
+                if (currentSongIndex < songs.size()) {
+                    // play the next song
+                    try {
+                        mediaPlayer.setDataSource(songs.get(currentSongIndex));
+                    }catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // reset the index and stop the media player
+                    currentSongIndex = 0;
+                    mediaPlayer.stop();
+                }
             }
         });
     }
-}
+        }
