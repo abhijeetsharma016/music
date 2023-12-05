@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity { private Button play; priva
         public void onClick(View v) {
             mediaPlayer.start();
         }
-    });
+    }); 
     pause.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
