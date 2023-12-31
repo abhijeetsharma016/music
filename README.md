@@ -1,4 +1,5 @@
 Music Player App
+
 Experience the joy of music with this Android app built for music enthusiasts. Play a diverse playlist from remote sources, control playback with play and pause buttons, and seamlessly navigate through tracks. The app features a seek bar for precise control and dynamically handles errors, ensuring a smooth listening experience.
 
 Key Features:
